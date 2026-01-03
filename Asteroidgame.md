@@ -1,6 +1,3 @@
-layout: page
-title: "Asteroid game"
-permalink: /AsteroidGame
 <!doctype html>
 
 <html lang="en">
