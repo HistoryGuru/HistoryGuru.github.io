@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temple Run Chinese Character Game</title>
+  <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #6b8e23 100%);
+            font-family: 'Cinzel', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .menu-screen {
+            display: block;
+        }
+
+        .game-screen {
+            display: none;
+        }
+
+        .jungle-temple {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #6b8e23 100%);
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .temple-pillars {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 120px;
+            background: linear-gradient(to bottom, #8B4513 0%, #654321 100%);
+            border: 3px solid #654321;
+        }
+
+        .left-pillar {
+            left: 50px;
+            border-radius: 0 15px 15px 0;
+        }
+
+        .right-pillar {
+            right: 50px;
+            border-radius: 15px 0 0 15px;
+        }
+
+        .vines {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .vine {
+            position: absolute;
+            width: 8px;
+            background: linear-gradient(to bottom, #228B22 0%, #006400 100%);
+            border-radius: 4px;
+            animation: sway 4s ease-in-out infinite;
+        }
+
+        .vine-1 { left: 80px; height: 80%; animation-delay: 0s; }
+        .vine-2 { left: 140px; height: 90%; animation-delay: 1s; }
+        .vine-3 { left: 110px; height: 70%; animation-delay: 2s; }
+        .vine-4 { right: 80px; height: 85%; animation-delay: 0.5s; }
+        .vine-5 { right: 140px; height: 75%; animation-delay: 1.5s; }
+        .vine-6 { right: 110px; height: 95%; animation-delay: 2.5s; }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .vine::after {
+            content: '🍃';
+            position: absolute;
+            bottom: -10px;
+            left: -8px;
+            font-size: 16px;
+            animation: leafSway 3s ease-in-out infinite;
+        }
+
+        @keyframes leafSway {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .menu-container {
+            background: rgba(139, 69, 19, 0.95);
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+            border: 4px solid #8B4513;
+            z-index: 10;
+            position: relative;
+        }
+
+        .title {
+            font-size: 3rem;
+            color: #F4A460;
+            margin-bottom: 40px;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+        }
+
+        .sentence-selection {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #F4A460;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .sentence-btn {
+            margin: 8px;
+            padding: 12px 20px;
+            background: rgba(244, 164, 96, 0.3);
+            border: 3px solid #8B4513;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            color: #F4A460;
+            font-weight: 600;
+            position: relative;
+            font-family: 'Cinzel', serif;
+            box-shadow: inset 0 2px 4px rgba(139, 69, 19, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sentence-btn::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -10px;
+            right: -10px;
+            bottom: -5px;
+            background: linear-gradient(45deg, #F4E4BC 0%, #E6D3A3 50%, #D4C19C 100%);
+            border-radius: 15px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: -1;
+            border: 2px solid #8B4513;
+            box-shadow: inset 0 2px 10px rgba(139, 69, 19, 0.3);
+        }
+
+        .sentence-btn:hover::before {
+            opacity: 0.9;
+            transform: scaleX(1.1);
+        }
+
+        .sentence-btn::after {
+            content: '📜';
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .sentence-btn:hover::after {
+            opacity: 1;
+            left: -30px;
+        }
+
+        .sentence-btn:hover {
+            background: rgba(244, 164, 96, 0.5);
+            border-color: #F4A460;
+            transform: translateY(-2px);
+        }
+
+        .sentence-btn.active {
+            background: #FFD700;
+            color: #8B4513;
+            border-color: #FFD700;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }
+
+        .difficulty-selection {
+            margin-bottom: 40px;
+        }
+
+        .gems-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .gem {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .gem:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .gem.active {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            transform: scale(1.15);
+        }
+
+        .gem-light-blue {
+            background: radial-gradient(circle, #87CEEB 0%, #4682B4 100%);
+        }
+
+        .gem-dark-blue {
+            background: radial-gradient(circle, #4169E1 0%, #191970 100%);
+        }
+
+        .gem-purple {
+            background: radial-gradient(circle, #9370DB 0%, #4B0082 100%);
+        }
+
+        .gem-red {
+            background: radial-gradient(circle, #FF6347 0%, #DC143C 100%);
+        }
+
+        .gem-dark-red {
+            background: radial-gradient(circle, #B22222 0%, #8B0000 100%);
+        }
+
+        .gem-black {
+            background: radial-gradient(circle, #2F2F2F 0%, #000000 100%);
+            animation: shine 2s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.6); }
+        }
+
+        .gem-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #000000;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .start-btn {
+            padding: 15px 40px;
+            background: linear-gradient(to bottom, #32CD32 0%, #228B22 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(50, 205, 50, 0.3);
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(to bottom, #228B22 0%, #006400 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(50, 205, 50, 0.5);
+        }
+
+        /* Game Screen Styles */
+        .game-container {
+            background: rgba(139, 69, 19, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 1000px;
+            width: 95%;
+            border: 3px solid #8B4513;
+        }
+
+        .temple-ground {
+            background: linear-gradient(to bottom, #8B4513 0%, #654321 80%, #000000 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 40px 0;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #654321;
+        }
+
+        .temple-ground::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent 0%, #000000 100%);
+            pointer-events: none;
+        }
+
+        .sentence-display {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+            min-height: 250px;
+            position: relative;
+        }
+
+        .character-pillar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: all 0.8s ease-out;
+            opacity: 0;
+        }
+
+        .character-pillar.revealed {
+            opacity: 1;
+        }
+
+        .character {
+            font-size: 2.5rem;
+            font-family: 'SimSun', serif;
+            color: #FFD700;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin-bottom: 10px;
+            transition: all 0.8s ease-out;
+            z-index: 10;
+            position: relative;
+        }
+
+        .pillar {
+            width: 40px;
+            height: 120px;
+            background: linear-gradient(to bottom, #D2691E 0%, #8B4513 50%, #654321 100%);
+            border-radius: 8px 8px 4px 4px;
+            position: relative;
+            transition: all 0.8s ease-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .pillar::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            height: 10px;
+            background: linear-gradient(to bottom, #F4A460 0%, #D2691E 100%);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .pillar::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: -2px;
+            right: -2px;
+            height: 8px;
+            background: #654321;
+            border-radius: 4px;
+        }
+
+        .character-pillar.collapsing .character {
+            opacity: 0;
+            transform: translateY(80px) rotate(45deg) scale(0.8);
+            transition: all 1.2s ease-in;
+        }
+
+        .character-pillar.collapsing .pillar {
+            transform: translateY(40px) rotate(-25deg) scaleY(0.2) scaleX(1.2);
+            opacity: 0.2;
+            transition: all 1.2s ease-in;
+        }
+
+        .character-pillar.fallen {
+            transform: translateY(150px) rotate(90deg);
+            opacity: 0;
+            transition: all 0.8s ease-in;
+        }
+
+        .indiana-jones {
+            position: absolute;
+            font-size: 2rem;
+            z-index: 20;
+            transition: all 0.6s ease-out;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .indiana-jones.jumping {
+            animation: jump 0.6s ease-out;
+        }
+
+        @keyframes jump {
+            0% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-40px); }
+            100% { transform: translateX(-50%) translateY(0); }
+        }
+
+        .indiana-jones.falling {
+            animation: fall-down 1s ease-in forwards;
+        }
+
+        @keyframes fall-down {
+            0% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            100% { transform: translateX(-50%) translateY(200px) rotate(180deg); opacity: 0; }
+        }
+
+        .temple-gem {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 3rem;
+            z-index: 15;
+            animation: gemGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes gemGlow {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.3); }
+        }
+
+        .temple-gem.stolen {
+            animation: gemSteal 1.5s ease-out forwards;
+        }
+
+        @keyframes gemSteal {
+            0% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: translateY(100px) scale(0.8);
+                opacity: 0.8;
+            }
+            100% { 
+                transform: translateY(180px) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        .intro-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FFD700;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            z-index: 25;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .intro-text.show {
+            opacity: 1;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to bottom, #32CD32 0%, #228B22 100%);
+            color: white;
+            border: 2px solid #228B22;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to bottom, #228B22 0%, #006400 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(50, 205, 50, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(to bottom, #FF6347 0%, #DC143C 100%);
+            color: white;
+            border: 2px solid #DC143C;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(to bottom, #DC143C 0%, #B22222 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 99, 71, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(to bottom, #FFD700 0%, #FFA500 100%);
+            color: #8B4513;
+            border: 2px solid #FFA500;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(to bottom, #FFA500 0%, #FF8C00 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .debris {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #8B4513;
+            border-radius: 2px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .debris.falling {
+            animation: fall 1.5s ease-in forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(75px) rotate(180deg) scale(0.9);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(180px) rotate(540deg) scale(0.3);
+            }
+        }
+
+        .boulder {
+            position: absolute;
+            background: radial-gradient(circle at 30% 30%, #A0522D, #654321, #3D2914);
+            border-radius: 50%;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 5;
+            border: 1px solid #654321;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .boulder.falling {
+            animation: boulderFall 3s linear forwards;
+        }
+
+        @keyframes boulderFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(400px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .ancient-scroll {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ancient-scroll:hover {
+            transform: scale(1.05);
+        }
+
+        .ancient-scroll::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -20px;
+            right: -20px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #F4E4BC 0%, #E6D3A3 50%, #D4C19C 100%);
+            border-radius: 15px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: -1;
+            border: 2px solid #8B4513;
+            box-shadow: inset 0 2px 10px rgba(139, 69, 19, 0.3);
+        }
+
+        .ancient-scroll:hover::before {
+            opacity: 0.9;
+            transform: scaleX(1.2);
+        }
+
+        .ancient-scroll::after {
+            content: '📜';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .ancient-scroll:hover::after {
+            opacity: 1;
+            left: -35px;
+        }
+
+        .escape-platform {
+            position: absolute;
+            right: 10px;
+            bottom: 50px;
+            width: 80px;
+            height: 20px;
+            background: linear-gradient(to bottom, #D2691E 0%, #8B4513 100%);
+            border-radius: 10px;
+            border: 2px solid #654321;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .escape-platform.show {
+            opacity: 1;
+        }
+
+        .start-platform {
+            position: absolute;
+            left: 10px;
+            bottom: 50px;
+            width: 80px;
+            height: 20px;
+            background: linear-gradient(to bottom, #D2691E 0%, #8B4513 100%);
+            border-radius: 10px;
+            border: 2px solid #654321;
+            opacity: 1;
+        }
+
+        .gem-pedestal {
+            position: absolute;
+            right: 30px;
+            bottom: 70px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(to bottom, #FFD700 0%, #FFA500 100%);
+            border-radius: 50% 50% 10px 10px;
+            border: 2px solid #FF8C00;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .gem-pedestal.show {
+            opacity: 1;
+        }
+
+        .score-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(139, 69, 19, 0.95);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            color: #FFD700;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            z-index: 30;
+            opacity: 0;
+            transition: all 0.5s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .score-display.show {
+            opacity: 1;
+        }
+
+        .death-skull {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.6;
+            z-index: 15;
+            animation: skullFade 3s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes skullFade {
+            0% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+            100% { opacity: 0.3; transform: scale(0.9); }
+        }
+
+        @media (max-width: 768px) {
+            .gems-container {
+                gap: 15px;
+            }
+            
+            .gem {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .menu-container {
+                padding: 30px;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body><!-- Menu Screen -->
+  <div class="menu-screen" id="menuScreen">
+   <div class="jungle-temple">
+    <div class="temple-pillars left-pillar"></div>
+    <div class="temple-pillars right-pillar"></div>
+    <div class="vines">
+     <div class="vine vine-1"></div>
+     <div class="vine vine-2"></div>
+     <div class="vine vine-3"></div>
+     <div class="vine vine-4"></div>
+     <div class="vine vine-5"></div>
+     <div class="vine vine-6"></div>
+    </div>
+    <div class="menu-container">
+     <h1 class="title">🏛️ Temple of Ancient Words 🏛️</h1>
+     <div class="sentence-selection">
+      <h2 class="section-title">Choose Your Game Mode</h2>
+      <div style="margin-bottom: 30px;"><button class="sentence-btn active" onclick="selectGameMode('temple-run')">🏛️ Temple Run</button> <button class="sentence-btn" onclick="selectGameMode('temple-dash')">⚡ Temple Dash</button> <button class="sentence-btn" onclick="selectGameMode('endless-labyrinth')">♾️ Endless Labyrinth</button>
+      </div>
+      <h2 class="section-title">Custom Sentences (Max 5)</h2>
+      <div id="customSentencesList" style="margin-bottom: 20px;"><!-- Custom sentences will be displayed here -->
+      </div>
+      <div id="customInput" style="margin-top: 20px;"><input type="text" id="customSentenceInput" placeholder="Enter Chinese sentence..." style="padding: 10px; font-size: 1rem; border: 2px solid #8B4513; border-radius: 8px; 
+                                      background: rgba(244, 164, 96, 0.3); color: #8B4513; width: 300px; font-family: 'Cinzel', serif;"> <button class="sentence-btn" onclick="addCustomSentence()" style="margin-left: 10px;">Add Sentence</button>
+      </div>
+      <div style="margin-top: 25px;"><button class="btn btn-primary" onclick="generateLink()" style="margin: 5px;">📋 Generate Link</button>
+      </div>
+      <div id="generatedLink" style="display: none; margin-top: 20px; padding: 15px; background: rgba(244, 164, 96, 0.2); border-radius: 10px; border: 2px solid #8B4513;">
+       <div style="color: #F4A460; font-weight: bold; margin-bottom: 10px;">
+        Your Generated Link:
+       </div>
+       <div id="linkText" style="color: #8B4513; word-break: break-all; font-size: 0.9rem; background: rgba(255, 255, 255, 0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;"></div><button class="sentence-btn" onclick="copyLink()" style="margin: 5px;">📋 Copy Link</button>
+      </div>
+     </div>
+     <div class="difficulty-selection">
+      <h2 class="section-title">Select Your Gem of Power</h2>
+      <div class="gems-container">
+       <div class="gem gem-light-blue" onclick="selectDifficulty(0, 2000)" title="Peaceful - 2.0s">
+        💎 
+        <div class="gem-info">
+         Peaceful<br>
+         2.0s
+        </div>
+       </div>
+       <div class="gem gem-dark-blue" onclick="selectDifficulty(1, 1500)" title="Calm - 1.5s">
+        💎 
+        <div class="gem-info">
+         Calm<br>
+         1.5s
+        </div>
+       </div>
+       <div class="gem gem-purple active" onclick="selectDifficulty(2, 1000)" title="Moderate - 1.0s">
+        💎 
+        <div class="gem-info">
+         Moderate<br>
+         1.0s
+        </div>
+       </div>
+       <div class="gem gem-red" onclick="selectDifficulty(3, 800)" title="Challenging - 0.8s">
+        💎 
+        <div class="gem-info">
+         Challenging<br>
+         0.8s
+        </div>
+       </div>
+       <div class="gem gem-dark-red" onclick="selectDifficulty(4, 500)" title="Intense - 0.5s">
+        💎 
+        <div class="gem-info">
+         Intense<br>
+         0.5s
+        </div>
+       </div>
+       <div class="gem gem-black" onclick="selectDifficulty(5, 100)" title="Legendary - 0.1s">
+        ⚫ 
+        <div class="gem-info">
+         Legendary<br>
+         0.1s
+        </div>
+       </div>
+      </div>
+     </div><button class="start-btn" onclick="enterTemple()">🚪 Enter Temple 🚪</button>
+     <div style="margin-top: 25px;"><button class="btn btn-secondary" onclick="showLoadSave()">📥 Load Save</button>
+     </div>
+     <div id="loadSaveModal" style="display: none; margin-top: 20px; padding: 15px; background: rgba(244, 164, 96, 0.2); border-radius: 10px; border: 2px solid #8B4513;">
+      <div style="color: #F4A460; font-weight: bold; margin-bottom: 10px;">
+       Load Save File:
+      </div><input type="text" id="loadSaveInput" placeholder="Paste your link here..." style="padding: 10px; font-size: 1rem; border: 2px solid #8B4513; border-radius: 8px; 
+                                  background: rgba(244, 164, 96, 0.3); color: #8B4513; width: 100%; max-width: 400px; font-family: 'Cinzel', serif; margin-bottom: 10px;">
+      <div><button class="sentence-btn" onclick="loadFromLink()" style="margin: 5px;">Load</button> <button class="sentence-btn" onclick="closeLoadSave()" style="margin: 5px;">Cancel</button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Game Screen -->
+  <div class="game-screen" id="gameScreen">
+   <div class="game-container">
+    <h1 class="title">🏛️ Temple Collapse 🏛️</h1>
+    <div class="temple-ground">
+     <div class="sentence-display" id="sentenceDisplay"></div>
+    </div>
+    <div class="game-controls"><button class="btn btn-primary" id="startBtn" onclick="startGame()">Start Collapse</button> <button class="btn btn-danger" id="pauseBtn" onclick="pauseGame()" disabled>Pause</button> <button class="btn btn-secondary" id="resetBtn" onclick="resetGame()">Reset</button> <button class="btn btn-secondary" id="failBtn" onclick="failGame()" disabled>Stop Course / You Failed</button> <button class="btn btn-secondary" onclick="backToMenu()">Back to Menu</button>
+    </div>
+   </div>
+  </div>
+  <script>
+        const gemColors = ['💎', '💎', '💎', '💎', '💎', '⚫'];
+        const gemNames = ['Light Blue', 'Dark Blue', 'Purple', 'Red', 'Dark Red', 'Black'];
+        
+        let customSentences = [];
+        let currentCharIndex = 0;
+        let gameInterval = null;
+        let isGameRunning = false;
+        let speed = 1000; // milliseconds
+        let selectedDifficulty = 2;
+        let introPlaying = false;
+        let boulderInterval = null;
+        let wordsCompleted = 0;
+        let gameMode = 'temple-run'; // 'temple-dash', 'temple-run', 'endless-labyrinth'
+        let allSentences = [];
+        let currentSentenceInMode = 0;
+        let totalSentencesCompleted = 0;
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateCustomSentencesList();
+        });
+        
+        function selectGameMode(mode) {
+            document.querySelectorAll('.sentence-btn').forEach(btn => {
+                if (btn.textContent.includes('Temple Run') || btn.textContent.includes('Temple Dash') || btn.textContent.includes('Endless Labyrinth')) {
+                    btn.classList.remove('active');
+                }
+            });
+            event.target.classList.add('active');
+            gameMode = mode;
+        }
+
+        function addCustomSentence() {
+            const input = document.getElementById('customSentenceInput');
+            const sentence = input.value.trim();
+            
+            if (!sentence) {
+                alert('⚠️ Please enter a sentence first!');
+                return;
+            }
+            
+            if (customSentences.length >= 5) {
+                alert('⚠️ Maximum 5 sentences allowed!');
+                return;
+            }
+            
+            customSentences.push(sentence);
+            input.value = '';
+            updateCustomSentencesList();
+            
+            // Hide generated link when sentences change
+            document.getElementById('generatedLink').style.display = 'none';
+        }
+        
+        function removeCustomSentence(index) {
+            customSentences.splice(index, 1);
+            updateCustomSentencesList();
+            
+            // Hide generated link when sentences change
+            document.getElementById('generatedLink').style.display = 'none';
+        }
+        
+        function updateCustomSentencesList() {
+            const listContainer = document.getElementById('customSentencesList');
+            
+            if (customSentences.length === 0) {
+                listContainer.innerHTML = '<div style="color: #F4A460; font-style: italic;">No sentences added yet. Add up to 5 sentences.</div>';
+                return;
+            }
+            
+            listContainer.innerHTML = customSentences.map((sentence, index) => `
+                <div style="display: flex; align-items: center; justify-content: center; margin: 10px 0; gap: 10px;">
+                    <div style="background: rgba(244, 164, 96, 0.3); border: 2px solid #8B4513; border-radius: 8px; padding: 10px 15px; color: #8B4513; font-weight: 600; flex: 0 1 auto; max-width: 400px;">
+                        ${index + 1}. ${sentence}
+                    </div>
+                    <button class="sentence-btn" onclick="removeCustomSentence(${index})" style="padding: 8px 15px;">❌ Remove</button>
+                </div>
+            `).join('');
+        }
+        
+        function generateLink() {
+            if (customSentences.length === 0) {
+                alert('⚠️ Please add at least one sentence first!');
+                return;
+            }
+            
+            // Simple format: link.(sentence1,sentence2,sentence3)
+            const link = `link.(${customSentences.join(',')})`;
+            
+            document.getElementById('linkText').textContent = link;
+            document.getElementById('generatedLink').style.display = 'block';
+        }
+        
+        function copyLink() {
+            const linkText = document.getElementById('linkText').textContent;
+            navigator.clipboard.writeText(linkText).then(() => {
+                alert('✅ Link copied to clipboard!');
+            }).catch(() => {
+                alert('⚠️ Failed to copy. Please copy manually.');
+            });
+        }
+        
+        function showLoadSave() {
+            document.getElementById('loadSaveModal').style.display = 'block';
+        }
+        
+        function closeLoadSave() {
+            document.getElementById('loadSaveModal').style.display = 'none';
+            document.getElementById('loadSaveInput').value = '';
+        }
+        
+        function loadFromLink() {
+            const input = document.getElementById('loadSaveInput').value.trim();
+            
+            if (!input.startsWith('link.(') || !input.endsWith(')')) {
+                alert('⚠️ Invalid link format! Link should be in format: link.(sentence1,sentence2,...)');
+                return;
+            }
+            
+            try {
+                // Extract sentences from link - simple split by comma
+                const content = input.substring(6, input.length - 1); // Remove "link.(" and ")"
+                const loadedSentences = content.split(',');
+                
+                if (loadedSentences.length > 5) {
+                    alert('⚠️ This link contains more than 5 sentences. Only the first 5 will be loaded.');
+                    customSentences = loadedSentences.slice(0, 5);
+                } else {
+                    customSentences = loadedSentences;
+                }
+                
+                updateCustomSentencesList();
+                closeLoadSave();
+                alert('✅ Sentences loaded successfully!');
+            } catch (error) {
+                alert('⚠️ Failed to load link. Please check the format.');
+            }
+        }
+        
+        function selectDifficulty(index, speedValue) {
+            document.querySelectorAll('.gem').forEach((gem, i) => {
+                gem.classList.toggle('active', i === index);
+            });
+            selectedDifficulty = index;
+            speed = speedValue;
+        }
+        
+        function enterTemple() {
+            if (customSentences.length === 0) {
+                alert('⚠️ Please add at least one sentence before entering the temple!');
+                return;
+            }
+            
+            // Use custom sentences for all game modes
+            allSentences = [...customSentences];
+            
+            currentSentenceInMode = 0;
+            totalSentencesCompleted = 0;
+            
+            document.getElementById('menuScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            displaySentence();
+        }
+        
+        function backToMenu() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('menuScreen').style.display = 'block';
+            resetGame();
+        }
+
+        function createBoulder() {
+            const display = document.getElementById('sentenceDisplay');
+            const boulder = document.createElement('div');
+            boulder.className = 'boulder';
+            
+            const size = 20 + Math.random() * 40;
+            boulder.style.width = size + 'px';
+            boulder.style.height = size + 'px';
+            boulder.style.left = Math.random() * (display.offsetWidth - size) + 'px';
+            boulder.style.top = '-100px';
+            
+            display.appendChild(boulder);
+            
+            setTimeout(() => {
+                boulder.classList.add('falling');
+            }, 100);
+            
+            setTimeout(() => {
+                if (boulder.parentNode) {
+                    boulder.parentNode.removeChild(boulder);
+                }
+            }, 3500);
+        }
+
+        function startBoulderFall() {
+            boulderInterval = setInterval(() => {
+                createBoulder();
+                // Create additional boulders for more intensity
+                if (Math.random() < 0.7) {
+                    setTimeout(() => createBoulder(), 100 + Math.random() * 300);
+                }
+                if (Math.random() < 0.4) {
+                    setTimeout(() => createBoulder(), 300 + Math.random() * 400);
+                }
+            }, 300 + Math.random() * 400);
+        }
+
+        function stopBoulderFall() {
+            if (boulderInterval) {
+                clearInterval(boulderInterval);
+                boulderInterval = null;
+            }
+        }
+        
+        function createGroundImpact(pillarContainer) {
+            const containerRect = document.getElementById('sentenceDisplay').getBoundingClientRect();
+            const pillarRect = pillarContainer.getBoundingClientRect();
+            
+            for (let i = 0; i < 8; i++) {
+                const dust = document.createElement('div');
+                dust.className = 'debris';
+                dust.style.width = '6px';
+                dust.style.height = '6px';
+                dust.style.background = '#D2691E';
+                dust.style.opacity = '0.6';
+                dust.style.borderRadius = '50%';
+                
+                dust.style.left = (pillarRect.left - containerRect.left + Math.random() * 50 - 25) + 'px';
+                dust.style.top = (containerRect.bottom - containerRect.top - 20) + 'px';
+                
+                document.getElementById('sentenceDisplay').appendChild(dust);
+                
+                setTimeout(() => {
+                    dust.style.transition = 'all 0.8s ease-out';
+                    dust.style.transform = `translateX(${(Math.random() - 0.5) * 100}px) translateY(-30px) scale(0)`;
+                    dust.style.opacity = '0';
+                }, 100);
+                
+                setTimeout(() => {
+                    if (dust.parentNode) {
+                        dust.parentNode.removeChild(dust);
+                    }
+                }, 1000);
+            }
+        }
+        
+        function createDebris(pillarElement) {
+            const pillarRect = pillarElement.getBoundingClientRect();
+            const containerRect = document.getElementById('sentenceDisplay').getBoundingClientRect();
+            
+            for (let i = 0; i < 12; i++) {
+                const debris = document.createElement('div');
+                debris.className = 'debris';
+                
+                const size = 4 + Math.random() * 8;
+                debris.style.width = size + 'px';
+                debris.style.height = size + 'px';
+                
+                const colors = ['#8B4513', '#654321', '#D2691E', '#A0522D'];
+                debris.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                debris.style.left = (pillarRect.left - containerRect.left + Math.random() * 60 - 10) + 'px';
+                debris.style.top = (pillarRect.top - containerRect.top + 80 + Math.random() * 40) + 'px';
+                debris.style.animationDelay = (Math.random() * 0.5) + 's';
+                
+                debris.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                document.getElementById('sentenceDisplay').appendChild(debris);
+                
+                setTimeout(() => {
+                    debris.classList.add('falling');
+                }, 50 + Math.random() * 200);
+                
+                setTimeout(() => {
+                    if (debris.parentNode) {
+                        debris.parentNode.removeChild(debris);
+                    }
+                }, 2500);
+            }
+        }
+        
+        function displaySentence() {
+            let sentence;
+            if (gameMode === 'temple-dash') {
+                sentence = allSentences[0];
+            } else {
+                sentence = allSentences[currentSentenceInMode % allSentences.length];
+            }
+            
+            const display = document.getElementById('sentenceDisplay');
+            display.innerHTML = '';
+            
+            for (let i = 0; i < sentence.length; i++) {
+                const char = sentence[i];
+                
+                const pillarContainer = document.createElement('div');
+                pillarContainer.className = 'character-pillar';
+                pillarContainer.id = `pillar-${i}`;
+                
+                const charElement = document.createElement('div');
+                charElement.className = 'character';
+                charElement.textContent = char;
+                
+                const pillarElement = document.createElement('div');
+                pillarElement.className = 'pillar';
+                
+                pillarContainer.appendChild(charElement);
+                pillarContainer.appendChild(pillarElement);
+                display.appendChild(pillarContainer);
+            }
+            
+            // Add temple gem
+            const templeGem = document.createElement('div');
+            templeGem.className = 'temple-gem';
+            templeGem.id = 'templeGem';
+            templeGem.textContent = gemColors[selectedDifficulty];
+            display.appendChild(templeGem);
+            
+            // Add start platform
+            const startPlatform = document.createElement('div');
+            startPlatform.className = 'start-platform';
+            startPlatform.id = 'startPlatform';
+            display.appendChild(startPlatform);
+
+            // Add escape platform
+            const escapePlatform = document.createElement('div');
+            escapePlatform.className = 'escape-platform';
+            escapePlatform.id = 'escapePlatform';
+            display.appendChild(escapePlatform);
+
+            // Add gem pedestal
+            const gemPedestal = document.createElement('div');
+            gemPedestal.className = 'gem-pedestal';
+            gemPedestal.id = 'gemPedestal';
+            display.appendChild(gemPedestal);
+
+            // Add score display
+            const scoreDisplay = document.createElement('div');
+            scoreDisplay.className = 'score-display';
+            scoreDisplay.id = 'scoreDisplay';
+            display.appendChild(scoreDisplay);
+            
+            // Add intro text
+            const introText = document.createElement('div');
+            introText.className = 'intro-text';
+            introText.id = 'introText';
+            introText.innerHTML = `The legendary ${gemNames[selectedDifficulty]} Gem<br>awaits in the ancient temple...`;
+            display.appendChild(introText);
+            
+            // Add Indiana Jones character
+            const indianaJones = document.createElement('div');
+            indianaJones.className = 'indiana-jones';
+            indianaJones.id = 'indianaJones';
+            indianaJones.textContent = '🤠';
+            indianaJones.style.opacity = '0';
+            display.appendChild(indianaJones);
+            
+            // Position Indiana Jones on the start platform
+            positionIndianaJonesOnStartPlatform();
+        }
+        
+        function positionIndianaJonesOnStartPlatform() {
+            const indianaJones = document.getElementById('indianaJones');
+            indianaJones.style.left = '40px';
+            indianaJones.style.bottom = '70px';
+        }
+
+        function positionIndianaJones(pillarIndex) {
+            const indianaJones = document.getElementById('indianaJones');
+            const pillar = document.getElementById(`pillar-${pillarIndex}`);
+            
+            if (pillar && indianaJones) {
+                const pillarRect = pillar.getBoundingClientRect();
+                const containerRect = document.getElementById('sentenceDisplay').getBoundingClientRect();
+                
+                indianaJones.style.left = (pillarRect.left - containerRect.left + 20) + 'px';
+                indianaJones.style.bottom = '200px';
+            }
+        }
+        
+        function createDeathSkull(x, y) {
+            const skull = document.createElement('div');
+            skull.className = 'death-skull';
+            skull.textContent = '💀';
+            skull.style.left = x + 'px';
+            skull.style.bottom = y + 'px';
+            document.getElementById('sentenceDisplay').appendChild(skull);
+        }
+
+        function moveIndianaJones(fromIndex, toIndex) {
+            const indianaJones = document.getElementById('indianaJones');
+            let currentSentence;
+            
+            if (gameMode === 'temple-dash') {
+                currentSentence = allSentences[0];
+            } else {
+                currentSentence = allSentences[currentSentenceInMode % allSentences.length];
+            }
+            
+            if (toIndex >= currentSentence.length) {
+                // Indiana Jones escapes to platform!
+                const escapePlatform = document.getElementById('escapePlatform');
+                escapePlatform.classList.add('show');
+                
+                indianaJones.style.right = '30px';
+                indianaJones.style.left = 'auto';
+                indianaJones.style.bottom = '70px';
+                
+                setTimeout(() => {
+                    checkGameCompletion();
+                }, 1000);
+                return;
+            }
+            
+            indianaJones.classList.add('jumping');
+            
+            setTimeout(() => {
+                positionIndianaJones(toIndex);
+                indianaJones.classList.remove('jumping');
+            }, 300);
+        }
+
+        function checkGameCompletion() {
+            totalSentencesCompleted++;
+            
+            if (gameMode === 'temple-dash') {
+                showVictorySequence();
+            } else if (gameMode === 'temple-run') {
+                if (totalSentencesCompleted >= allSentences.length) {
+                    showVictorySequence();
+                } else {
+                    // Move to next sentence immediately - no delay
+                    setTimeout(() => {
+                        currentSentenceInMode++;
+                        currentCharIndex = 0;
+                        displaySentence();
+                        startCollapseSequence();
+                    }, 100); // Minimal delay for smooth transition
+                }
+            } else if (gameMode === 'endless-labyrinth') {
+                // Continue to next sentence immediately - no delay
+                setTimeout(() => {
+                    currentSentenceInMode++;
+                    currentCharIndex = 0;
+                    displaySentence();
+                    startCollapseSequence();
+                }, 100); // Minimal delay for smooth transition
+            }
+        }
+
+        function showVictorySequence() {
+            const indianaJones = document.getElementById('indianaJones');
+            const gemPedestal = document.getElementById('gemPedestal');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            
+            // Show pedestal
+            gemPedestal.classList.add('show');
+            
+            // Indiana Jones places gem on pedestal
+            setTimeout(() => {
+                const pedestalGem = document.createElement('div');
+                pedestalGem.textContent = gemColors[selectedDifficulty];
+                pedestalGem.style.position = 'absolute';
+                pedestalGem.style.top = '-15px';
+                pedestalGem.style.left = '50%';
+                pedestalGem.style.transform = 'translateX(-50%)';
+                pedestalGem.style.fontSize = '1.5rem';
+                pedestalGem.style.zIndex = '25';
+                gemPedestal.appendChild(pedestalGem);
+                
+                // Calculate and show score
+                let currentSentence;
+                if (gameMode === 'temple-dash') {
+                    currentSentence = allSentences[0];
+                } else {
+                    currentSentence = allSentences[(currentSentenceInMode - 1) % allSentences.length];
+                }
+                
+                wordsCompleted = currentSentence.length;
+                const difficultyMultiplier = [1, 1.5, 2, 2.5, 3, 5][selectedDifficulty];
+                const baseScore = wordsCompleted * difficultyMultiplier * 100;
+                const finalScore = Math.round(baseScore * totalSentencesCompleted);
+                
+                scoreDisplay.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 15px;">🏆 VICTORY! 🏆</div>
+                    <div>Mode: ${gameMode.replace('-', ' ').toUpperCase()}</div>
+                    <div>Sentences Completed: ${totalSentencesCompleted}</div>
+                    <div>Difficulty: ${gemNames[selectedDifficulty]}</div>
+                    <div>Multiplier: ${difficultyMultiplier}x</div>
+                    <div style="font-size: 1.8rem; margin-top: 15px; color: #FFD700;">Final Score: ${finalScore}</div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="resetGame()" style="margin: 5px;">Play Again</button>
+                        <button class="btn btn-secondary" onclick="backToMenu()" style="margin: 5px;">Main Menu</button>
+                    </div>
+                `;
+                scoreDisplay.classList.add('show');
+                
+                stopBoulderFall();
+            }, 500);
+        }
+
+        function failGame() {
+            const indianaJones = document.getElementById('indianaJones');
+            const currentPillar = document.getElementById(`pillar-${currentCharIndex}`);
+            
+            // Get Indiana Jones position for skull placement
+            const jonesRect = indianaJones.getBoundingClientRect();
+            const containerRect = document.getElementById('sentenceDisplay').getBoundingClientRect();
+            const skullX = jonesRect.left - containerRect.left;
+            const skullY = 20; // Near bottom of pit
+            
+            // Make Indiana Jones fall with the pillar
+            if (currentPillar) {
+                currentPillar.classList.add('collapsing');
+                setTimeout(() => {
+                    currentPillar.classList.add('fallen');
+                }, 600);
+            }
+            
+            indianaJones.classList.add('falling');
+            
+            // Create death skull after fall
+            setTimeout(() => {
+                createDeathSkull(skullX, skullY);
+            }, 1000);
+            
+            // Calculate score
+            let totalWordsInCurrentSentence = currentCharIndex;
+            let totalWordsOverall = 0;
+            
+            // Add completed sentences
+            for (let i = 0; i < totalSentencesCompleted; i++) {
+                if (gameMode === 'temple-dash') {
+                    totalWordsOverall += allSentences[0].length;
+                } else {
+                    totalWordsOverall += allSentences[i % allSentences.length].length;
+                }
+            }
+            
+            totalWordsOverall += totalWordsInCurrentSentence;
+            
+            const difficultyMultiplier = [1, 1.5, 2, 2.5, 3, 5][selectedDifficulty];
+            const finalScore = Math.round(totalWordsOverall * difficultyMultiplier * 100);
+            
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            scoreDisplay.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 15px;">💀 FAILED! 💀</div>
+                <div>Mode: ${gameMode.replace('-', ' ').toUpperCase()}</div>
+                <div>Sentences Completed: ${totalSentencesCompleted}</div>
+                <div>Characters in Current: ${totalWordsInCurrentSentence}</div>
+                <div>Total Characters: ${totalWordsOverall}</div>
+                <div>Difficulty: ${gemNames[selectedDifficulty]}</div>
+                <div>Multiplier: ${difficultyMultiplier}x</div>
+                <div style="font-size: 1.8rem; margin-top: 15px; color: #FF6347;">Final Score: ${finalScore}</div>
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="resetGame()" style="margin: 5px;">Try Again</button>
+                    <button class="btn btn-secondary" onclick="backToMenu()" style="margin: 5px;">Main Menu</button>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                scoreDisplay.classList.add('show');
+            }, 1500);
+            
+            pauseGame();
+            stopBoulderFall();
+        }
+        
+        function playIntroSequence() {
+            introPlaying = true;
+            const introText = document.getElementById('introText');
+            const templeGem = document.getElementById('templeGem');
+            const indianaJones = document.getElementById('indianaJones');
+            
+            // Start boulder falling
+            startBoulderFall();
+            
+            // Show intro text
+            introText.classList.add('show');
+            
+            setTimeout(() => {
+                // Hide intro text and show Indiana Jones
+                introText.classList.remove('show');
+                indianaJones.style.opacity = '1';
+                
+                setTimeout(() => {
+                    // Update intro text for stealing
+                    introText.innerHTML = `Indiana Jones spots the ${gemNames[selectedDifficulty]} Gem!<br>He reaches for it...`;
+                    introText.classList.add('show');
+                    
+                    setTimeout(() => {
+                        // Hide text and steal gem
+                        introText.classList.remove('show');
+                        templeGem.classList.add('stolen');
+                        
+                        setTimeout(() => {
+                            // Final warning text and reveal pillars
+                            introText.innerHTML = `💀 THE TEMPLE IS COLLAPSING! 💀<br>Jump from pillar to pillar to escape!`;
+                            introText.classList.add('show');
+                            
+                            // Reveal all pillars and characters
+                            const pillars = document.querySelectorAll('.character-pillar');
+                            pillars.forEach((pillar, index) => {
+                                setTimeout(() => {
+                                    pillar.classList.add('revealed');
+                                }, index * 100);
+                            });
+                            
+                            setTimeout(() => {
+                                introText.classList.remove('show');
+                                introPlaying = false;
+                                startCollapseSequence();
+                            }, 2000);
+                        }, 1500);
+                    }, 2000);
+                }, 1500);
+            }, 2500);
+        }
+        
+        function startGame() {
+            if (isGameRunning || introPlaying) return;
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+            document.getElementById('failBtn').disabled = false;
+            
+            playIntroSequence();
+        }
+        
+        function startCollapseSequence() {
+            isGameRunning = true;
+            
+            gameInterval = setInterval(() => {
+                let currentSentence;
+                if (gameMode === 'temple-dash') {
+                    currentSentence = allSentences[0];
+                } else {
+                    currentSentence = allSentences[currentSentenceInMode % allSentences.length];
+                }
+                
+                if (currentCharIndex < currentSentence.length) {
+                    // Move Indiana Jones to the next pillar before current one collapses
+                    if (currentCharIndex + 1 < currentSentence.length) {
+                        moveIndianaJones(currentCharIndex, currentCharIndex + 1);
+                    } else {
+                        // Last pillar - Indiana Jones escapes
+                        moveIndianaJones(currentCharIndex, currentSentence.length);
+                    }
+                    
+                    const pillarContainer = document.getElementById(`pillar-${currentCharIndex}`);
+                    const pillarElement = pillarContainer.querySelector('.pillar');
+                    
+                    // Delay collapse slightly so Indiana Jones can jump first
+                    setTimeout(() => {
+                        pillarContainer.classList.add('collapsing');
+                        createDebris(pillarElement);
+                        
+                        setTimeout(() => {
+                            pillarContainer.classList.add('fallen');
+                            createGroundImpact(pillarContainer);
+                        }, 600);
+                    }, 200);
+                    
+                    currentCharIndex++;
+                } else {
+                    pauseGame();
+                }
+            }, speed);
+        }
+        
+        function pauseGame() {
+            isGameRunning = false;
+            introPlaying = false;
+            clearInterval(gameInterval);
+            stopBoulderFall();
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('failBtn').disabled = true;
+        }
+        
+        function resetGame() {
+            pauseGame();
+            currentCharIndex = 0;
+            wordsCompleted = 0;
+            currentSentenceInMode = 0;
+            totalSentencesCompleted = 0;
+            
+            if (document.getElementById('gameScreen').style.display !== 'none') {
+                displaySentence();
+            }
+            
+            const debris = document.querySelectorAll('.debris, .boulder, .death-skull');
+            debris.forEach(d => d.remove());
+            
+            // Reset button states
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('failBtn').disabled = true;
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b7f54ce7265cf22',t:'MTc2NzQxMDEyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
