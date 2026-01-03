@@ -42,6 +42,7 @@
             align-items: center;
             justify-content: center;
             flex: 1;
+            z-index: 1;
         }
         
         h1 {
@@ -49,6 +50,13 @@
             margin-bottom: 60px;
             text-align: center;
             letter-spacing: 2px;
+        }
+        
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
         }
         
         .game-button {
@@ -61,8 +69,10 @@
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
+            display: block;
             font-weight: bold;
+            min-width: 300px;
+            text-align: center;
         }
         
         .game-button:hover {
@@ -76,6 +86,7 @@
             bottom: 30px;
             font-size: 12px;
             color: #888888;
+            z-index: 1;
         }
     </style>
 </head>
@@ -83,7 +94,7 @@
     <div class="content">
         <h1>Jin 老师's Chinese Games</h1>
         
-        <div style="display: flex; flex-direction: column; gap: 30px; align-items: center;">
+        <div class="button-container">
             <a href="https://historyguru.github.io/Asteroidgame" class="game-button">
                 Play Asteroid Game
             </a>
