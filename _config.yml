@@ -1,3 +1,20 @@
 theme: jekyll-theme-midnight
 title: Leroy's Luxurious Lavish Labours
 description: Chinese games Mwahahaha
+<!DOCTYPE html>
+<html>
+<head>
+    <title>History Guru</title>
+</head>
+<body>
+    <h1>Welcome to History Guru</h1>
+    
+    <!-- Add your button here -->
+    <a href="https://historyguru.github.io/Asteroidgame" style="text-decoration: none;">
+        <button style="padding: 12px 24px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Play Asteroid Game
+        </button>
+    </a>
+    
+</body>
+</html>
